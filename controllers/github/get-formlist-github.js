@@ -1,3 +1,5 @@
+require('dotenv').load();
+
 var basicAuth = require('basic-auth')
 var createFormList = require('openrosa-formlist')
 var debug = require('debug')('simple-odk:get-formlist-github')
@@ -24,11 +26,14 @@ module.exports = function (req, res, next) {
   var options = {
     user: req.params.user,
     repo: req.params.repo,
-    auth: auth || {},
+    auth: auth || {
+      name: process.env.auth_name,
+      pass: process.env.auth_pass
+    },
     headers: {
       'User-Agent': 'simple-odk'
     },
-    baseUrl: protocol + '://' + req.headers.host + req.baseUrl + '/forms'
+    baseUrl: process.env.baseUrl + '/forms'
   }
 
   var cacheKey = options.user + '/' + options.repo

@@ -1,3 +1,5 @@
+require('dotenv').load();
+
 var basicAuth = require('basic-auth')
 var request = require('request')
 var debug = require('debug')('simple-odk:github-auth')
@@ -19,17 +21,30 @@ request = request.defaults({
  */
 function GithubAuth () {
   return function (req, res, next) {
-    var auth = basicAuth(req)
+    var origAuth = basicAuth(req)
     var t0 = Date.now()
 
-    if (auth === undefined) return unauthorized()
+    if (origAuth === undefined) {
+      if (process.env.auth_name && process.env.auth_pass) {
+        auth = {
+          name: process.env.auth_name,
+          pass: process.env.auth_pass
+        }
+        debug("no authentication passed, using env")
+      }
+      else
+        return unauthorized()
+    } else {
+      auth = origAuth
+      debug("basic authentication detected")
+    }
 
     debug('checking github auth')
 
     // We're going to cache auth details for 5 mins, so we avoid
     // repeat lookups on Github, but we'll only cache a hash of
     // the auth header, for a little added security
-    var cacheKey = 'gh_auth' + createHash(req.headers.authorization)
+    var cacheKey = 'gh_auth' + (origAuth === undefined ? 'local' : createHash(req.headers.authorization))
 
     // Check if we have already checked this user/pass
     // Authorization will always be handled by the Github API,

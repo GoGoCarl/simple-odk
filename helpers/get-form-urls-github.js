@@ -1,3 +1,5 @@
+require('dotenv').load();
+
 var Octokat = require('octokat')
 var debug = require('debug')('simple-odk:get-form-urls-github')
 
@@ -8,13 +10,9 @@ var FORMS_FOLDER = 'forms'
  * @returns {Array} an array of urls to the forms.
  */
 function getFormUrls (options, cb) {
-  var octoOptions
-
-  if (options.auth) {
-    octoOptions = {
-      username: options.auth.name,
-      password: options.auth.pass
-    }
+  var octoOptions = {
+    username: (options.auth === undefined ? process.env.auth_user : options.auth.name),
+    password: (options.auth === undefined ? process.env.auth_pass : options.auth.pass)
   }
 
   var octo = new Octokat(octoOptions)

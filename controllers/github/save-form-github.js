@@ -1,5 +1,7 @@
 // Saves a file to github
 
+require('dotenv').load();
+
 var Hubfs = require('hubfs.js')
 var extend = require('xtend')
 var basicAuth = require('basic-auth')
@@ -28,8 +30,8 @@ function saveForm (req, res, next) {
     owner: user,
     repo: repo,
     auth: {
-      username: auth.name,
-      password: auth.pass
+      username: (auth === undefined ? process.env.auth_user : auth.name),
+      password: (auth === undefined ? process.env.auth_pass : auth.pass)
     }
   })
 
