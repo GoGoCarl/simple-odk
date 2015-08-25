@@ -1,6 +1,5 @@
 require('dotenv').load();
 
-var basicAuth = require('basic-auth')
 var createFormList = require('openrosa-formlist')
 var debug = require('debug')('simple-odk:get-formlist-github')
 var cacheManager = require('cache-manager')
@@ -20,21 +19,21 @@ var formListCache = cacheManager.caching({
  * OpenRosa formList xml.
  */
 module.exports = function (req, res, next) {
-  var auth = basicAuth(req)
   var protocol = req.hostname === 'localhost' ? 'http' : 'https'
 
   var options = {
     user: req.params.user,
     repo: req.params.repo,
-    auth: auth || {
-      name: process.env.auth_name,
-      pass: process.env.auth_pass
-    },
     headers: {
       'User-Agent': 'simple-odk'
     },
     baseUrl: process.env.baseUrl + '/forms'
   }
+  if (process.env.auth_name && process.env.auth_pass)
+    options.auth = {
+      name: process.env.auth_name,
+      pass: process.env.auth_pass
+    }
 
   var cacheKey = options.user + '/' + options.repo
 
@@ -53,12 +52,13 @@ module.exports = function (req, res, next) {
       debug('got form urls', formUrls)
 
       var formlistOptions = {
-        headers: options.headers,
-        auth: {
+        headers: options.headers
+      }
+      if (options.auth)
+        formlistOptions.auth = {
           user: options.auth.name,
           pass: options.auth.pass
         }
-      }
 
       createFormList(formUrls, formlistOptions, function (err, xml) {
         if (err) return cb(err)

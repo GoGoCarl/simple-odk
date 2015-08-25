@@ -1,4 +1,5 @@
-var basicAuth = require('basic-auth')
+require('dotenv').load();
+
 var proxy = require('../../helpers/proxy-content-type')
 
 /**
@@ -6,19 +7,10 @@ var proxy = require('../../helpers/proxy-content-type')
  * adds appropriate content-type headers
  */
 module.exports = function (req, res) {
-  var auth = basicAuth(req)
-
   var options = {
     headers: {
       'User-Agent': 'simple-odk',
       'Accept': 'application/vnd.github.v3.raw'
-    }
-  }
-
-  if (auth) {
-    options.auth = {
-      user: auth.name,
-      pass: auth.pass
     }
   }
 

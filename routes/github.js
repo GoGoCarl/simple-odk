@@ -21,7 +21,7 @@ function addS3bucket (req, res, next) {
   next()
 }
 
-router.use(GithubAuth())
+//router.use(GithubAuth())
 
 router.route('/forms/:blob_sha')
   .get(getForm)
@@ -31,6 +31,7 @@ router.route('/formList')
   .get(getFormlist)
 
 router.route('/submission')
+  .all(GithubAuth())
   .all(FormSubmissionMiddleware())
   .post(ProcessSubmission())
   .post(addS3bucket)
