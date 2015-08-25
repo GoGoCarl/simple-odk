@@ -30,7 +30,7 @@ function saveForm (req, res, next) {
     owner: user,
     repo: repo,
     auth: {
-      username: (auth === undefined ? process.env.auth_user : auth.name),
+      username: (auth === undefined ? process.env.auth_name : auth.name),
       password: (auth === undefined ? process.env.auth_pass : auth.pass)
     }
   })
